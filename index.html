@@ -577,7 +577,7 @@ body{
   <div class="hspacer"></div>
   <div class="header-actions">
       <span id="sync-status" style="font-size:11px;color:var(--muted);white-space:nowrap;min-width:80px"></span>
-      <button class="hbtn" onclick="openSbSettingsModal()" title="Supabase 云同步设置">☁ 云设置</button>
+      <!-- cloud settings button hidden (credentials hardcoded) -->
     <div class="search-wrap">
       <span class="search-icon">⌕</span>
       <input type="text" id="search" placeholder="搜索提示词…" oninput="doSearch(this.value)">
@@ -822,12 +822,14 @@ const SB_URL_LSKEY  = 'sb_project_url';
 const SB_KEY_LSKEY  = 'sb_anon_key';
 let _sbClient = null;
 
+// ── Hardcoded credentials (public anon key, safe to expose) ──
+const SUPABASE_URL  = 'https://nejrhaprppznzfklhlnx.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_p5FIo5spvAVceKfo8Z5nXQ_X_ltqfXs';
+
 function getSupabase() {
   if (_sbClient) return _sbClient;
-  const url = localStorage.getItem(SB_URL_LSKEY);
-  const key = localStorage.getItem(SB_KEY_LSKEY);
-  if (url && key && typeof supabase !== 'undefined') {
-    _sbClient = supabase.createClient(url, key);
+  if (typeof supabase !== 'undefined') {
+    _sbClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   }
   return _sbClient;
 }
@@ -1629,15 +1631,11 @@ function download(content,filename,type) {
 // INIT
 // ══════════════════════════════════════════
 (async function init() {
-  // Pre-fill settings modal if already configured
-  const savedUrl = localStorage.getItem(SB_URL_LSKEY);
-  if (savedUrl) {
-    const el = document.getElementById('sb-url-input');
-    if (el) el.value = savedUrl;
-    const ek = document.getElementById('sb-key-input');
-    const savedKey = localStorage.getItem(SB_KEY_LSKEY);
-    if (ek && savedKey) ek.value = savedKey;
-  }
+  // Credentials are hardcoded — pre-fill hidden modal for reference
+  const el = document.getElementById('sb-url-input');
+  if (el) el.value = SUPABASE_URL;
+  const ek = document.getElementById('sb-key-input');
+  if (ek) ek.value = SUPABASE_ANON_KEY;
   await loadState();
   render();
 })();
